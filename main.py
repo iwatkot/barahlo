@@ -23,12 +23,18 @@ import json
 import os
 from dotenv import load_dotenv
 
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Load environment variables
-load_dotenv()
+load_dotenv(os.path.join(SCRIPT_DIR, ".env"))
 
 API_ID = int(os.getenv("API_ID"))
+print(f"🔑 API_ID loaded: {API_ID}")
 API_HASH = os.getenv("API_HASH")
+print(f"🔑 API_HASH loaded: {API_HASH}")
 PHONE_NUMBER = os.getenv("PHONE_NUMBER")
+print(f"📞 PHONE_NUMBER loaded: {PHONE_NUMBER}")
 
 # Keywords to search for in messages
 KEYWORDS = os.getenv("KEYWORDS", "").split(",")
@@ -36,8 +42,11 @@ KEYWORDS = os.getenv("KEYWORDS", "").split(",")
 # Your username to forward messages to
 FORWARD_TO_USERNAME = os.getenv("FORWARD_TO_USERNAME")
 
-# File to store forwarded message IDs
-FORWARDED_MESSAGES_FILE = "forwarded_messages.json"
+# File to store forwarded message IDs (absolute path)
+FORWARDED_MESSAGES_FILE = os.path.join(SCRIPT_DIR, "forwarded_messages.json")
+
+# Session file path (absolute path)
+SESSION_FILE = os.path.join(SCRIPT_DIR, "test_session")
 
 
 def load_forwarded_messages():
@@ -74,7 +83,7 @@ async def get_chat_messages_by_time(chat_username, hours_back=6):
     print(f"📅 Getting messages since: {cutoff_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
     # Create client
-    client = TelegramClient("test_session", API_ID, API_HASH)
+    client = TelegramClient(SESSION_FILE, API_ID, API_HASH)
 
     # Load already forwarded message IDs
     forwarded_message_ids = load_forwarded_messages()
@@ -226,7 +235,7 @@ async def test_telegram_connection():
     print(f"Using phone number: {PHONE_NUMBER}")
 
     # Create client
-    client = TelegramClient("test_session", API_ID, API_HASH)
+    client = TelegramClient(SESSION_FILE, API_ID, API_HASH)
 
     try:
         # Connect to Telegram
