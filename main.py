@@ -1,6 +1,18 @@
 #!/usr/bin/env python3
 """
 Telegram Chat Parser - Monitors keywords and forwards matching messages
+
+USAGE:
+1. Copy .env.example to .env and fill in your credentials
+2. Run once for authentication: python main.py
+   (uncomment test_telegram_connection)
+3. Run for hourly monitoring: python main.py (default mode)
+
+The script will:
+- Check NSbaraholka every hour for new messages
+- Search for keywords from your .env file
+- Forward matching messages to your specified user
+- Track forwarded messages to prevent duplicates
 """
 
 import asyncio
@@ -275,9 +287,35 @@ async def test_telegram_connection():
         print("🔌 Disconnected from Telegram")
 
 
+async def run_scheduler():
+    """Run the chat monitoring every hour"""
+    print("🕐 Starting hourly chat monitoring...")
+    print("🔄 Will check NSbaraholka every hour for new messages")
+    print("⏹️  Press Ctrl+C to stop")
+
+    while True:
+        try:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"\n🕐 [{current_time}] Running scheduled check...")
+
+            # Run the chat parsing
+            await get_chat_messages_by_time("NSbaraholka", 1)  # Last hour
+
+            print("💤 Sleeping for 1 hour...")
+            await asyncio.sleep(3600)  # Sleep for 1 hour (3600 seconds)
+
+        except KeyboardInterrupt:
+            print("\n🛑 Scheduler stopped by user")
+            break
+        except Exception as e:
+            print(f"❌ Error in scheduler: {e}")
+            print("💤 Sleeping for 10 minutes...")
+            await asyncio.sleep(600)
+
+
 if __name__ == "__main__":
     # First time setup: uncomment to test connection and authenticate
     asyncio.run(test_telegram_connection())
 
-    # Monitor NSbaraholka for the last 6 hours
-    asyncio.run(get_chat_messages_by_time("NSbaraholka", 6))
+    # Run the scheduler (checks every hour)
+    asyncio.run(run_scheduler())
