@@ -1,0 +1,5 @@
+.venv/
+__pycache__/
+*.session
+*.env
+forwarded_messages.json
