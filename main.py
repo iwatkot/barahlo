@@ -46,7 +46,11 @@ FORWARD_TO_USERNAME = os.getenv("FORWARD_TO_USERNAME")
 FORWARDED_MESSAGES_FILE = os.path.join(SCRIPT_DIR, "forwarded_messages.json")
 
 # Session file path (absolute path)
-SESSION_FILE = os.path.join(SCRIPT_DIR, "test_session")
+SESSION_FILE = os.path.join(SCRIPT_DIR, "test_session.session")
+if not os.path.exists(SESSION_FILE):
+    print(f"📄 Session file not found!")
+else:
+    print(f"📄 Session file: {SESSION_FILE} exists, using it for authentication")
 
 
 def load_forwarded_messages():
